@@ -10,6 +10,7 @@ export interface LoginData {
 export interface LoginRes {
   token: string;
 }
+
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
@@ -19,7 +20,8 @@ export function logout() {
 }
 
 export function getUserInfo() {
-  return axios.post<UserState>('/api/user/info');
+  // return axios.post<UserState>('/api/user/info?token');
+  return axios.get<UserState>('/api/user/info?token=admin-token');
 }
 
 export function getMenuList() {

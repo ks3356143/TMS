@@ -1,7 +1,6 @@
-import { DEFAULT_LAYOUT } from '../base';
-import { AppRouteRecordRaw } from '../types';
+import { DEFAULT_LAYOUT } from '@/router/constants';
 
-const DASHBOARD: AppRouteRecordRaw = {
+export default {
   path: '/dashboard',
   name: 'dashboard',
   component: DEFAULT_LAYOUT,
@@ -21,8 +20,6 @@ const DASHBOARD: AppRouteRecordRaw = {
         requiresAuth: true,
         roles: ['*'],
       },
-    },
+    }
   ],
 };
-
-export default DASHBOARD;

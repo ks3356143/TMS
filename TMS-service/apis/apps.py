@@ -14,7 +14,7 @@ pool = PooledDB(pymysql,mincached=1,maxcached=5,host=config.MYSQL_HOST,port=conf
 
 app_application = Blueprint("app_application",__name__)
 
-@app_application.route("/api/application/product",methods=['GET'])
+@app_application.route("/product",methods=['GET'])
 def getProduct():
     connection = pool.connection()
     with connection.cursor() as cursor:
@@ -27,7 +27,7 @@ def getProduct():
     return response
 
 #分页查询apps接口
-@app_application.route("/api/application/search",methods=['POST'])
+@app_application.route("/search",methods=['POST'])
 def searchBykey():
     #先获取body
     body = request.get_data()
@@ -75,7 +75,7 @@ def searchBykey():
     response['total'] = num
     return response
 
-@app_application.route("/api/application/update",methods=['POST'])
+@app_application.route("/update",methods=['POST'])
 def product_update():
     body = request.get_data()
     body = json.loads(body)
@@ -128,7 +128,7 @@ def product_update():
         return resp_format_success
 
 #测试项-远程搜索接口-通知支持name和appId的搜索
-@app_application.route("/api/application/options",methods=['GET'])
+@app_application.route("/options",methods=['GET'])
 def getOptionsForSelected():
     value = request.args.get('value','')
     print("搜索的内容为：",value)

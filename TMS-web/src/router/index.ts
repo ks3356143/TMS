@@ -3,7 +3,6 @@ import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css';
 
 import { appRoutes } from './routes';
-import { REDIRECT_MAIN, NOT_FOUND_ROUTE } from './routes/base';
 import createRouteGuard from './guard';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
@@ -24,8 +23,12 @@ const router = createRouter({
       },
     },
     ...appRoutes,
-    REDIRECT_MAIN,
-    NOT_FOUND_ROUTE,
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: () => import('@/views/not-found/index.vue'),
+    },
+
   ],
   scrollBehavior() {
     return { top: 0 };

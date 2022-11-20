@@ -8,6 +8,7 @@ import { MockParams } from '@/types/mock';
 import { isLogin } from '@/utils/auth';
 
 setupMock({
+  mock: false,
   setup() {
     // Mock.XHR.prototype.withCredentials = true;
 
@@ -16,21 +17,14 @@ setupMock({
       if (isLogin()) {
         const role = window.localStorage.getItem('userRole') || 'admin';
         return successResponseWrap({
-          name: '王立群',
+          name: '大奇',
           avatar:
             '//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png',
           email: 'wangliqun@email.com',
           job: 'frontend',
-          jobName: '前端艺术家',
+          jobName: '非典型程序员',
           organization: 'Frontend',
-          organizationName: '前端',
-          location: 'beijing',
-          locationName: '北京',
-          introduction: '人潇洒，性温存',
-          personalWebsite: 'https://www.arco.design',
-          phone: '150****0000',
-          registrationDate: '2013-05-10 12:10:00',
-          accountId: '15012312300',
+          organizationName: '测试开发',
           certification: 1,
           role,
         });

@@ -6,7 +6,7 @@ import json
 
 app_user = Blueprint("app_user",__name__)
 
-@app_user.route("/api/user/login",methods=['POST'])
+@app_user.route("/login",methods=['POST'])
 def login():
     data = request.get_data()
     js_data = json.loads(data)
@@ -18,7 +18,7 @@ def login():
         result_error = {"code":60204,"message":"账号密码错误！"}
         return result_error
         
-@app_user.route("/api/user/info",methods=["GET"])
+@app_user.route("/info",methods=["GET"])
 def info():
     #获取GET请求中的token参数
     token = request.args.get("token")

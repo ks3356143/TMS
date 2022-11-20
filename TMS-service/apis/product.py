@@ -156,30 +156,89 @@ def product_remove():
 
     return resp_data
 
-@app_product.route("/search", methods=['GET'])
+@app_product.route("/search",methods=['GET'])
 def product_search():
-    # 搜索接口-先获取title和keyCode字段
+    print('进入到product_search接口')
+    # 获取title和keyCode
     title = request.args.get('title')
     keyCode = request.args.get('keyCode')
 
-    # 基础sql语句
+    # 基础语句定义
     sql = "SELECT * FROM `products` WHERE `status`=0"
-    # 如果title不为空，拼接title语句，注意LIKE关键词
+
+    # 如果title不为空，拼接tilite的模糊查询
     if title is not None:
         sql = sql + " AND `title` LIKE '%{}%'".format(title)
+    # 如果keyCode不为空，拼接tilite的模糊查询
     if keyCode is not None:
         sql = sql + " AND `keyCode` LIKE '%{}%'".format(keyCode)
-    # 按时间排序
+
+    # 排序最后拼接(分页查询）
     sql = sql + " ORDER BY `update` DESC"
-    # 连接数据库操作
+
     connection = connectDB()
+
+    # 使用python的with..as控制流语句（相当于简化的try except finally）
     with connection.cursor() as cursor:
-        print("输出的sql为{}".format(sql))
+        # 按照条件进行查询
         cursor.execute(sql)
         data = cursor.fetchall()
-    # 返回数据
+
+    # 按返回模版格式进行json结果返回
     resp_data = {
         "code": 20000,
         "data": data
     }
+
+    return resp_data
+
+@app_product.route("/searchPage",methods=['GET'])
+def product_search_page():
+    # 获取title和keyCode
+    title = request.args.get('title')
+    keyCode = request.args.get('keyCode')
+
+    # 新增页数和每页个数参数，空时候做默认处理，并注意前端传过来可能是字符串，需要做个强制转换
+    pageSize = 10 if request.args.get('pageSize') is None else int(request.args.get('pageSize'))
+    currentPage = 1 if request.args.get('currentPage') is None else int(request.args.get('currentPage'))
+
+    sql = "SELECT * FROM `products` WHERE `status`=0"
+    # 增加基础全量个数统计
+    sqlCount = "SELECT COUNT(*) as `count` FROM `products` WHERE `status`=0"
+
+    # 条件拼接全量统计也需要同步
+
+    if title is not None:
+        sql = sql + " AND `title` LIKE '%{}%'".format(title)
+        sqlCount = sqlCount + " AND `title` LIKE '%{}%'".format(title)
+    if keyCode is not None:
+        sql = sql + " AND `keyCode` LIKE '%{}%'".format(keyCode)
+        sqlCount = sqlCount + " AND `keyCode` LIKE '%{}%'".format(keyCode)
+
+    # 排序最后拼接带分页查询
+    sql = sql + ' ORDER BY `update` DESC LIMIT {},{}'.format((currentPage - 1) * pageSize, pageSize)
+
+    connection = connectDB()
+
+    # 使用python的with..as控制流语句（相当于简化的try except finally）
+    with connection:
+        # 先查询总数
+        with connection.cursor() as cursor:
+            cursor.execute(sqlCount)
+            total = cursor.fetchall()
+
+        # 执行查询分页查询
+        with connection.cursor() as cursor:
+            # 按照条件进行查询
+            cursor.execute(sql)
+            data = cursor.fetchall()
+
+    # 带着分页查询结果和总条数返回，total注意是list字段需要下角标key取值
+    resp_data = {
+        "code": 20000,
+        "message": "success",
+        "data": data,
+        "total": total[0]['count']
+    }
+
     return resp_data

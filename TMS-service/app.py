@@ -11,7 +11,7 @@ CORS(app, supports_credentials=True)
 app.register_blueprint(app_product, url_prefix="/api/product") #后面一个参数可以省略清爽
 app.register_blueprint(app_user, url_prefix="/api/user")
 app.register_blueprint(test_manager)
-app.register_blueprint(app_application)
+app.register_blueprint(app_application, url_prefix="/api/application")
 
 @app.route('/')
 def hello_world():
