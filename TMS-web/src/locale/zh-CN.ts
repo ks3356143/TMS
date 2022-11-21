@@ -6,9 +6,10 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
-  'menu.config': '基础管理',
-  'menu.config.product': '产品线管理',
-  'menu.dashboard': '仪表盘',
+  'menu.config': '项目和需求管理',
+  'menu.config.product': '项目管理',
+  'menu.config.demand': '需求管理',
+  'menu.dashboard': '基础管理',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.server.monitor': '实时监控-服务端',

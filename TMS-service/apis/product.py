@@ -40,14 +40,39 @@ def product_create():
     # 定义默认返回体
     resp_data = {
         "code": 20000,
-        "message": "success",
+        "message": "成功",
         "data": []
     }
 
     # 获取请求传递json body
     body = request.get_data()
     body = json.loads(body)
-
+    # 表单非空验证
+    print(body)
+    if 'keyCode' not in body:
+        resp_data['message'] = '所填项目代号为空'
+        resp_data['code'] = 20001
+        return resp_data
+    if 'title' not in body:
+        resp_data['message'] = '所填项目名称为空'
+        resp_data['code'] = 20001
+        return resp_data
+    if 'tester' not in body:
+        resp_data['message'] = '所填项目负责人为空'
+        resp_data['code'] = 20001
+        return resp_data
+    if 'seller' not in body:
+        resp_data['message'] = '所填商务人员为空'
+        resp_data['code'] = 20001
+        return resp_data
+    if 'step' not in body:
+        resp_data['message'] = '所填项目阶段为空'
+        resp_data['code'] = 20001
+        return resp_data
+    if 'customer' not in body:
+        resp_data['message'] = '所填客户单位为空'
+        resp_data['code'] = 20001
+        return resp_data
     # 先做个判断看keyCode是否重复
     with connection:
         with connection.cursor() as cursor:
@@ -57,10 +82,11 @@ def product_create():
 
         if len(result) > 0:
             resp_data['code'] = 200001
-            resp_data['message'] = f"唯一项目代号{body['keyCode']}已经存在"
+            resp_data['message'] = f"唯一项目代号{body['keyCode']}已经存在，请检查项目代号"
             return resp_data
 
         with connection.cursor() as cursor:
+            print(body)
             sql = "INSERT INTO `products` (`type`,`keyCode`,`title`,`tester`,`step`,`customer`,`seller`) VALUES (%s,%s,%s,%s,%s,%s,%s)"
             cursor.execute(sql, (
             body['type'], body['keyCode'], body['title'], body['tester'], body['step'], body['customer'],

@@ -71,15 +71,31 @@
           @before-ok="addModalOk"
           @cancel="addModalCancel"
         >
-          <a-form :model="productForm">
-            <a-form-item field="title" label="名称">
-              <a-input v-model="productForm.title" placeholder="项目线名称" />
+          <a-form ref="formRef" :model="productForm" :rules="rules">
+            <a-form-item field="keyCode" label="项目编号" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.keyCode" placeholder="keycode不可重复"  allow-clear />
             </a-form-item>
-            <a-form-item field="keyCode" label="唯一码">
-              <a-input v-model="productForm.keyCode" placeholder="keycode不可重复" />
+            <a-form-item field="title" label="项目名称" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.title" placeholder="项目线名称" allow-clear />
             </a-form-item>
-            <a-form-item field="desc" label="备注">
-              <a-textarea v-model="productForm.desc" placeholder="一些备注说明" />
+            <a-form-item field="type" label="项目类型" :validate-trigger="['change','input','focus']">
+              <a-select v-model="productForm.type" placeholder="请选择项目类型" allow-clear>
+                <a-option value="鉴定项目">鉴定项目</a-option>
+                <a-option value="三方测评">三方测评</a-option>
+                <a-option value="CNAS项目">CNAS项目</a-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item field="tester" label="项目负责人" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.tester" placeholder="请输入项目负责人，TODO：以后改为热搜索" allow-clear />
+            </a-form-item>
+            <a-form-item field="step" label="测评阶段" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.step" default-value="测评大纲编写" placeholder="请输入测评阶段，默认开始" allow-clear />
+            </a-form-item>
+            <a-form-item field="customer" label="客户单位" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.customer" placeholder="请输入客户单位" allow-clear />
+            </a-form-item>
+            <a-form-item field="seller" label="销售人员" :validate-trigger="['change','input','focus']">
+              <a-input v-model="productForm.seller" placeholder="请输入项目对应销售人员，TODO：改为热搜索" allow-clear />
             </a-form-item>
           </a-form>
         </a-modal>
@@ -89,20 +105,33 @@
           @before-ok="editModalOk"
           @cancel="editModalCancel"
         >
-          <a-form :model="productForm">
-            <a-form-item field="id" label="编号" disabled>
-              <a-input v-model="productForm.id" />
-            </a-form-item>
-            <a-form-item field="title" label="名称">
-              <a-input v-model="productForm.title" placeholder="项目线名称" />
-            </a-form-item>
-            <a-form-item field="keyCode" label="唯一码">
-              <a-input v-model="productForm.keyCode" placeholder="keycode不可重复" />
-            </a-form-item>
-            <a-form-item field="desc" label="备注">
-              <a-textarea v-model="productForm.desc" placeholder="一些备注说明" />
-            </a-form-item>
-          </a-form>
+        <a-form :model="productForm" :rules="rules">
+          <a-form-item field="keyCode" label="项目编号" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.keyCode" placeholder="keycode不可重复"  allow-clear />
+          </a-form-item>
+          <a-form-item field="title" label="项目名称" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.title" placeholder="项目线名称" allow-clear />
+          </a-form-item>
+          <a-form-item field="type" label="项目类型" :validate-trigger="['change','input','focus']">
+            <a-select v-model="productForm.type" placeholder="请选择项目类型" allow-clear>
+              <a-option value="鉴定项目">鉴定项目</a-option>
+              <a-option value="三方测评">三方测评</a-option>
+              <a-option value="CNAS项目">CNAS项目</a-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item field="tester" label="项目负责人" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.tester" placeholder="请输入项目负责人，TODO：以后改为热搜索" allow-clear />
+          </a-form-item>
+          <a-form-item field="step" label="测评阶段" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.step" default-value="测评大纲编写" placeholder="请输入测评阶段，默认开始" allow-clear />
+          </a-form-item>
+          <a-form-item field="customer" label="客户单位" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.customer" placeholder="请输入客户单位" allow-clear />
+          </a-form-item>
+          <a-form-item field="seller" label="销售人员" :validate-trigger="['change','input','focus']">
+            <a-input v-model="productForm.seller" placeholder="请输入项目对应销售人员，TODO：改为热搜索" allow-clear />
+          </a-form-item>
+        </a-form>
         </a-modal>
         <a-modal
           v-model:visible="delModalVisible"
@@ -127,11 +156,13 @@ import {
   apiProductDelete,
   apiProductSearch,
   apiProductSearchPage,
+productData,
 } from "@/api/product";
-import { ref, reactive } from "vue";
+import { ref, reactive, unref } from "vue";
 import { TableData } from "@arco-design/web-vue/es/table/interface";
 import moment from "moment";
 import * as Console from "console";
+import { valid } from "mockjs";
 
 const formatDate = (date: any) => {
   return moment(date).format("YYYY-MM-DD");
@@ -172,17 +203,24 @@ const columns = [
   {
     title: "测评阶段",
     dataIndex: "step",
-    width: 100,
+    width: 150,
+  },
+  {
+    title: "客户名称",
+    dataIndex: "customer",
+    width: 250,
   },
   {
     title: "开始时间",
     dataIndex: "begintime",
     slotName: "begintime",
+    width:150,
   },
   {
     title: "更新时间",
     dataIndex: "update",
     slotName: "update",
+    width:150,
   },
   {
     title: "操作",
@@ -210,7 +248,8 @@ const productForm = reactive({
   title: undefined,
   tester:undefined,
   seller:undefined,
-  step:undefined,
+  step:'测评大纲编写',
+  customer:undefined,
 });
 
 const productTotal = ref<number>();
@@ -248,16 +287,32 @@ const addButtonClick = () => {
   // 新增项目线按钮触发事件
   addModalVisible.value = true; // 新增赋值为True显示
 };
+
+// 项目添加编辑表单验证
+const rules = reactive({
+  keyCode:[{ required: true, message: "请输入项目标号格式RXXX", trigger: "blur" },
+    { min: 3, max: 5, message: '字符个数3~5', trigger: 'blur' }],
+  title:[{ required: true, message: "请输入项目名称", trigger: "blur" },
+    { min: 1, max: 50, message: '字符小于50', trigger: 'blur' }],
+  type:[{ required: true, message: "请输入项目类型", trigger: "blur" },],
+  tester:[{ required: true, message: "请输入项目负责人", trigger: "blur" },],
+  step:[{ required: true, message: "测评阶段必填", trigger: "blur" },],
+  customer:[{ required: true, message: "请填写客户单位", trigger: "blur" },],
+  seller:[{ required: true, message: "请填写销售人员", trigger: "blur" },],
+})
+
 const addModalOk = async () => {
-  // 添加对话框确定按钮，提交数据操作
-  const res = await apiProductAdd(productForm);
-  if (res.code === 20000) {
-    addModalVisible.value = false; // 新增对话框
-    btnSearchClick(); // 添加成功重新请求列表
-  } else {
-    console.log("项目添加失败");
-  }
+    // 首先判断异步表单校验
+        console.log("进入项目添加函数");
+        const res = await apiProductAdd(productForm);
+        if (res.code === 20000) {
+        addModalVisible.value = false; // 新增对话框
+        btnSearchClick(); // 添加成功重新请求列表
+      } else {
+        console.log("项目添加失败");
+      }
 };
+
 const addModalCancel = () => {
   // 对话框取消按钮，赋值使其关闭对话框
   addModalVisible.value = false;
@@ -269,9 +324,13 @@ const editModalVisible = ref(false); // 控制显示和隐藏编辑对话框布�
 const editButtonClick = (record) => {
   // 修改项目线按钮触发事件
   productForm.id = record.id;
-  productForm.title = record.title;
+  productForm.type = record.type;
   productForm.keyCode = record.keyCode;
-  productForm.desc = record.desc;
+  productForm.title = record.title;
+  productForm.tester = record.tester;
+  productForm.step = record.step;
+  productForm.customer = record.customer;
+  productForm.seller = record.seller;
   editModalVisible.value = true; // 编辑显隐赋值为True显示
 };
 const editModalOk = async () => {

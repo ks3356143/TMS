@@ -1,4 +1,4 @@
-# 创建项目
+# 创建项目Init Arco
 
 ## 1.创建项目
 
@@ -44,9 +44,21 @@ arco init 项目名
 npm run dev
 ```
 
+记得安装全部包
+
+```
+yarn install
+```
+
 
 
 ## 2.关于mock的关闭和flask的跨域解决
+
+```python
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app, supports_credentials=True)
+```
 
 
 
@@ -59,6 +71,26 @@ function identity<T>(value:T):T {
     return value
 }
 ```
+
+
+
+# arcodesign路由
+
+首先为了减少维护了，菜单和路由绑定一起
+
+## 1、主要文件
+
+在`src/router/routes/modules`中一个ts文件表示一级菜单
+
+二级菜单使用children即可
+
+注意在arco中路由需要配置两个地方，第一是`src/router/routes/modules`一级菜单，并且配置路由懒加载
+
+第二是配置children
+
+![image-20221121184225001](C:\Users\chenjunyi\AppData\Roaming\Typora\typora-user-images\image-20221121184225001.png)
+
+
 
 
 

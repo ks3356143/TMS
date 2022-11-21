@@ -7,8 +7,9 @@ export interface productData {
   keyCode: string;
   title: string;
   tester: string;
-  seller: string;
   step:string;
+  seller: string;
+  customer:string;
 };
 
 export function apiProductAdd(data: productData) {
