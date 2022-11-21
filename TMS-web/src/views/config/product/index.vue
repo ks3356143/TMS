@@ -252,6 +252,18 @@ const productForm = reactive({
   customer:undefined,
 });
 
+// 初始化空状态函数声明
+const SetInitProductForm = () => {
+    productForm.id = undefined;
+    productForm.type = undefined;
+    productForm.keyCode = undefined;
+    productForm.title = undefined;
+    productForm.tester = undefined;
+    productForm.seller = undefined;
+    productForm.step = '测评大纲编写';
+    productForm.customer = undefined;
+};
+
 const productTotal = ref<number>();
 const productSearch = reactive({
   title: undefined,
@@ -284,6 +296,7 @@ btnSearchClick();
 /* 项目添加对话框start */
 const addModalVisible = ref(false); // 新增控制显示和隐藏布尔值，默认为flase
 const addButtonClick = () => {
+  SetInitProductForm();
   // 新增项目线按钮触发事件
   addModalVisible.value = true; // 新增赋值为True显示
 };
@@ -302,7 +315,7 @@ const rules = reactive({
 })
 
 const addModalOk = async () => {
-    // 首先判断异步表单校验
+    // 首先初始化对象
         console.log("进入项目添加函数");
         const res = await apiProductAdd(productForm);
         if (res.code === 20000) {
