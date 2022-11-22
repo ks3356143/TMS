@@ -3,7 +3,7 @@
       <div class="container">
         <div class="left-side">
           <div class="panel">
-            <a-form :model="productSearch" layout="inline">
+            <a-form :model="demandSearch" layout="inline">
               <a-form-item>
                 <a-input
                   v-model="productSearch.title"
@@ -241,7 +241,7 @@
   // };
   // fetchData();
   // 添加/编辑使用表单对象
-  const productForm = reactive({
+  const demandForm = reactive({
     id: undefined,
     type:undefined,
     keyCode:undefined,
@@ -252,13 +252,22 @@
     customer:undefined,
   });
   
-  const productTotal = ref<number>();
-  const productSearch = reactive({
-    title: undefined,
-    keyCode: undefined,
-    pageSize: 5,
+  // 下面是定义-搜索响应式变量
+  const demandTotal = ref<number>();
+  const demandtSearch = reactive({
+    productId: undefined, // 对应项目ID
+    name: undefined, // 需求名称
+    step:undefined, // 测试阶段
+    content:undefined, // 测试内容模糊搜索
+    importer:undefined, // 创建者
+    status:undefined,  // 0表示有测试项，1表示无测试项
+    chapter:undefined, // 测试章节号
+    chaptername:undefined, // 测试章节名称
+    // 下面是搜索页面不管
+    pageSize: 10,
     currentPage: 1,
   });
+
   const pageChange = (current: number) => {
     console.log(current);
     productSearch.currentPage = current;
@@ -381,7 +390,7 @@
   
   <script lang="ts">
   export default {
-    name: "Product",
+    name: "Demand",
   };
   </script>
   

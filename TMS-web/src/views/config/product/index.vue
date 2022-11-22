@@ -268,7 +268,7 @@ const productTotal = ref<number>();
 const productSearch = reactive({
   title: undefined,
   keyCode: undefined,
-  pageSize: 5,
+  pageSize: 10,
   currentPage: 1,
 });
 const pageChange = (current: number) => {
