@@ -17,46 +17,46 @@ export interface demandData {
   note:string;
 };
 
-export function apiProductAdd(data: demandData) {
-  return axios.post('/api/product/create', data);
+export function apiDemandAdd(data: demandData) {
+  return axios.post('/api/demand/create', data);
 }
 
-export function apiProductUpdate(data: demandData) {
-  return axios.post('/api/product/update', data);
+export function apiDemandUpdate(data: demandData) {
+  return axios.post('/api/demand/update', data);
 }
 
-export function apiProductDelete(id: number) {
-  return axios.delete('/api/product/delete', {
+export function apiDemandDelete(id: number) {
+  return axios.delete('/api/demand/delete', {
     params: {id}
   });
 }
 
-export function apiProductRemove(id: number) {
-  return axios.post(`/api/product/remove?id=${id}`);
+export function apiDemandRemove(id: number) {
+  return axios.post(`/api/demand/remove?id=${id}`);
 }
 
-export function apiProductList() {
-  return axios.get<TableData[]>('/api/product/list');
+export function apiDemandList() {
+  return axios.get<TableData[]>('/api/demand/list');
 }
 
-export interface productParams {
+export interface DemandParams {
   title: string;
   keyCode: string;
 };
-export function apiProductSearch(data: productParams) {
-  return axios.get<TableData[]>('/api/product/search',{
+export function apiDemandSearch(data: DemandParams) {
+  return axios.get<TableData[]>('/api/demand/search',{
     params: data
   });
 }
 
-export interface productPageParams {
+export interface DemandPageParams {
   title: string;
   keyCode: string;
   pageSize: number,
   currentPage: number
 };
-export function apiProductSearchPage(data: productPageParams) {
-  return axios.get<TableData[]>('/api/product/searchPage',{
+export function apiDemandSearchPage(data: DemandPageParams) {
+  return axios.get<TableData[]>('/api/demand/searchPage',{
     params: data
   });
 }

@@ -35,3 +35,12 @@ def info():
     else:
         result_error = {"code": 60204, "message": "用户信息获取错误"}
         return result_error
+
+@app_user.route("/logout",methods=["POST"])
+def logout():
+    data = request.get_data()
+    print(data)
+    result_success = {
+        "code":20000,
+        "message":"退出登录成功，返回登录页面"}
+    return result_success

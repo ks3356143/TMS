@@ -10,7 +10,7 @@
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Arco Pro
+          中科院卫星软件测评中心轻量化测评工具
         </a-typography-title>
         <icon-menu-fold
           v-if="appStore.device === 'mobile'"
