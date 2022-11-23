@@ -4,6 +4,7 @@ from flask import Blueprint
 import pymysql
 from flask import request
 import json
+from configs.format import resp_format_success,resp_format_failed
 
 app_product = Blueprint("app_product", __name__)
 
@@ -268,3 +269,33 @@ def product_search_page():
     }
 
     return resp_data
+
+#远程搜索接口
+@app_product.route("/originSearch",methods=['POST'])
+def originSearch():
+    body = request.get_data()
+    body = json.loads(body)
+    #拿到keyCode了
+    resp_data = {
+        "code": 20000,
+        "message": "success",
+        "data": []
+    }
+
+    connection = connectDB()
+    with connection:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM `products` WHERE `keyCode` LIKE '%{}%' AND `status`=0".format(body['keyCode'])
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            if len(result)>0:
+                resp_data['message'] = '查询成功'
+                resp_data['data'] = result
+                return resp_data
+    resp_data['message'] = '未找到相关项目编号！'
+    return resp_data
+
+
+
+
+

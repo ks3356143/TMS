@@ -12,6 +12,14 @@ export interface productData {
   customer:string;
 };
 
+// 远程搜索项目接口
+export interface word {
+  keyCode: string;
+};
+export function apiProductOrigin(data:word) {
+  return axios.post('/api/product/originSearch', data);
+}
+
 export function apiProductAdd(data: productData) {
   return axios.post('/api/product/create', data);
 }
