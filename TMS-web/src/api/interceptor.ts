@@ -37,7 +37,7 @@ axios.interceptors.request.use(
 );
 // 添加响应拦截器
 axios.interceptors.response.use(
-  (response: AxiosResponse<HttpResponse>) => {
+  (response: AxiosResponse<HttpResponse|any>) => {
     const res = response.data;
     // 如果自定义代码不是20000，则判断为错误.
     if (res.code !== 20000) {

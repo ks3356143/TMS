@@ -1,4 +1,3 @@
-import { REDIRECT_ROUTE_NAME } from '@/router/constants';
 import { AppRouteRecordRaw } from './types';
 
 export const DEFAULT_LAYOUT = () => import('@/layout/default-layout.vue');
@@ -14,7 +13,7 @@ export const REDIRECT_MAIN: AppRouteRecordRaw = {
   children: [
     {
       path: '/redirect/:path',
-      name: REDIRECT_ROUTE_NAME,
+      name: 'error',
       component: () => import('@/views/redirect/index.vue'),
       meta: {
         requiresAuth: true,

@@ -1,18 +1,18 @@
 import { DEFAULT_LAYOUT } from '@/router/constants';
 
 export default {
-  path: '/config',
-  name: 'Config',
-  component: DEFAULT_LAYOUT,
+  path: '/config', // 路由路径
+  name: 'Config', // 路由名称
+  component: DEFAULT_LAYOUT, // 跳转的组件页面
   meta: {
     locale: 'menu.config',
     requiresAuth: true,
     icon: 'icon-home',
-    order: 0,
+    order: 1,
   },
   children: [
     {
-      path: '/product',
+      path: 'product',
       name: 'Product',
       component: ()=> import('@/views/config/product/index.vue'),
       meta: {
@@ -22,7 +22,7 @@ export default {
       }
     },
     {
-      path: '/demand',
+      path: 'demand',
       name: 'Demand',
       component: ()=> import('@/views/config/demand/index.vue'),
       meta: {

@@ -1,11 +1,53 @@
 <template>
+  <div>
   <a-drawer :width="600" :visible="DrawVisible" @ok="handleOk" @cancel="handleCancel" unmountOnClose>
     <template #title>
-      {{ DrawTitle }}
+      <a-typography-title :heading="5" bold=True>
+        {{ DrawTitle }}
+      </a-typography-title>
     </template>
-    <div>
-      您可以根据当前情况讨论正文。一旦您按下OK（确定）按钮。
-    </div>
+      <a-form ref="DemandFormRef" :model="DemandForm" :style="{width:'540px'}" :rules="rulesCreate">
+        <a-form-item field="productId" label="选择项目" :validate-trigger="['change','input']">
+          <a-select  :loading="DemandSelectLoading" placeholder="请搜索项目代号或项目名称" 
+          @search="DemandSearchProduct" :filter-option="false" allow-search allow-clear v-model="DemandForm.productId">
+            <a-option v-for="Item of ProductOptionsSearch" :value="Item.id" :key="Item.id">{{Item.keyCode + ' : ' + Item.title}}</a-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item field="name" label="需求名称" >
+          <a-input max-length=50 v-model="DemandForm.name" allow-clear/>
+        </a-form-item>
+        <a-form-item field="document" label="需求文档名称" >
+          <a-input max-length=50 v-model="DemandForm.document" allow-clear/>
+        </a-form-item>
+        <a-form-item field="step" label="测试轮次" >
+          <a-select v-model="DemandForm.step" placeholder="请选择轮次..."  :filter-option="false" allow-clear>
+            <a-option value="第一轮测试" key=1>第一轮测试</a-option>
+            <a-option value="第二轮测试" key=2>第二轮测试</a-option>
+            <a-option value="第三轮测试" key=3>第三轮测试</a-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item field="chapter" label="需求文档章节" placeholder="Please enter something">
+          <a-input v-model="DemandForm.chapter" allow-clear>
+          <template #append>
+            X.X.X.XX格式
+          </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item field="chaptername" label="需求章节名称" placeholder="Please enter something">
+          <a-input v-model="DemandForm.chaptername" allow-clear>
+          </a-input>
+        </a-form-item>
+        <a-form-item field="content" label="需求内容录入" >
+          <a-textarea v-model="DemandForm.content" allow-clear/>
+        </a-form-item>
+        <a-form-item field="priority" label="优先级" >
+          <a-select v-model="DemandForm.priority" placeholder="请选择优先级..."  :filter-option="false" allow-clear>
+            <a-option value="高" key=1>高</a-option>
+            <a-option value="中" key=2>中</a-option>
+            <a-option value="低" key=3>低</a-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
   </a-drawer>
   <div class="container">
     <div class="left-side">
@@ -82,15 +124,17 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script lang="ts" setup>
-import { apiProductOrigin , apiProductList } from "@/api/product";
+import { apiProductOrigin , apiProductList , apiOriginProduct } from "@/api/product";
 import { ref, reactive, unref } from "vue";
 import { TableData } from "@arco-design/web-vue/es/table/interface";
 import moment from "moment";
 import * as Console from "console";
 import { valid } from "mockjs";
+import { stringLiteral } from "@babel/types";
 
 const formatDate = (date: any) => {
   return moment(date).format("YYYY-MM-DD");
@@ -110,7 +154,7 @@ const DemandSearch = reactive({
 
 // 定义项目搜索options,首先请求获取已有的options值
 const SelectOptionsGet = async () => {
-  const res = await apiProductList();
+  const res:any = await apiProductList();
   if (res.code === 20000) {
     ProductOptions.value = [] // 初始化空
     Object.keys(res.data).forEach(key=>{
@@ -121,14 +165,13 @@ const SelectOptionsGet = async () => {
   }
 };
 SelectOptionsGet();
-const ProductOptions = ref([]);
+const ProductOptions = ref<any>([]);
 const ProductLoading = ref(false);
-const DemandProductSearch = (value:string) => {
+const DemandProductSearch =  async (value:string) => {
       if (value) {
         ProductLoading.value = true;
-        const dataOrigin = { keyCode:value }
-        window.setTimeout(() => {
-          apiProductOrigin(dataOrigin).then((res:any)=>{
+        const dataOrigin = { keyCode:value as any }
+          await apiProductOrigin(dataOrigin).then((res:any)=>{
             ProductOptions.value = [] // 初始化空
             Object.keys(res.data).forEach(key=>{
               ProductOptions.value.push(res.data[key].keyCode)
@@ -137,26 +180,60 @@ const DemandProductSearch = (value:string) => {
         }).catch((err:string)=>{
           console.log('错误编号')
         })
-        }, 500)
       } else {
         ProductOptions.value = []
       }
     };
 
-// TODO:搜索按钮点击接口btnDemandSearch
+// #TODO:搜索按钮点击接口btnDemandSearch
 
-// TODO:重置搜索组合点击按钮btnDemandReset
+// #TODO:重置搜索组合点击按钮btnDemandReset
 
-// 抽屉相关操作
-const DrawTitle = ref('新增需求')
+// 抽屉相关操作1-打开抽屉操作
+const DrawTitle = ref<string>('新增需求')
 const DrawVisible = ref(false)
 const handleCancel = () => {
   DrawVisible.value = false;
     }
-// 新增需求按钮
 const btnDrawOpen = () => {
   DrawVisible.value = true
+  SelectOptionsDemand(); // 初始化收集项目ID
 }
+const DemandForm = reactive({
+  ProductName:undefined,
+});
+// 抽屉操作-2-其中项目搜索与绑定
+const ProductOptionsSearch = ref<any>([]); // 储存select的option-列表
+const SelectOptionsDemand = async () => { // 搜索项目列表，获取期productId以及keyCode还有title
+  const res:any = await apiProductList();
+    if (res.code === 20000) {
+      ProductOptionsSearch.value = [] // 初始化空
+      Object.keys(res.data).forEach(key=>{
+        ProductOptionsSearch.value.push(res.data[key])
+      })
+    } else {
+      console.log("项目搜索失败");
+    }
+};
+const DemandSelectLoading = ref<boolean>(false)
+const DemandSearchProduct =  async (value:string) => {
+      if (value) {
+        DemandSelectLoading.value = true;
+        const valueOrigin = { content:value as string }
+          await apiOriginProduct(valueOrigin as any).then((res:any)=>{
+            ProductOptionsSearch.value = [] // 初始化空
+            Object.keys(res.data).forEach(key=>{
+              // ProductOptionsSearch.value.push(`${res.data[key].keyCode} : ${res.data[key].title}`)
+              ProductOptionsSearch.value.push(res.data[key])
+            })
+            DemandSelectLoading.value = false;
+        }).catch((err:string)=>{
+          console.log('错误项目名搜索')
+        })
+      } else {
+        ProductOptionsSearch.value = []
+      }
+    };
 
 
 </script>

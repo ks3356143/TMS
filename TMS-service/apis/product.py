@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-
+from configs import config
+from dbutils.pooled_db import PooledDB
 from flask import Blueprint
 import pymysql
 from flask import request
@@ -7,6 +8,11 @@ import json
 from configs.format import resp_format_success,resp_format_failed
 
 app_product = Blueprint("app_product", __name__)
+
+#使用数据库连接池，初始化链接数据库，提高数据库连接效率
+pool = PooledDB(pymysql,mincached=1,maxcached=5,host=config.MYSQL_HOST,port=config.MYSQL_PORT,\
+                user=config.MYSQL_USER,passwd=config.MYSQL_PASSWORD,database=config.MYSQL_DATABASES,\
+                cursorclass=pymysql.cursors.DictCursor)
 
 def connectDB():
     connection = pymysql.connect(host='localhost',  # 数据库IP地址或链接域名
@@ -294,6 +300,31 @@ def originSearch():
                 return resp_data
     resp_data['message'] = '未找到相关项目编号！'
     return resp_data
+
+#远程搜索支持项目名称和keyCode
+@app_product.route("/optionsdemand",methods=['POST'])
+def getOptionsForSelected():
+    body = request.get_data()
+    body = json.loads(body)
+    print("搜索的内容为：",body)
+    response = resp_format_success
+    connection = pool.connection()
+    with connection.cursor() as cursor:
+        #先按照appId模糊搜索，没有数据按name搜索
+        sqlByAppId = "SELECT * FROM `products` WHERE `keyCode` LIKE '%{}%'".format(body['content'])
+        cursor.execute(sqlByAppId)
+        dataByAppId = cursor.fetchall()
+        if len(dataByAppId) > 0:
+            response['data'] = dataByAppId
+            print('进入了搜索项目编号分支',dataByAppId)
+        else:
+            sqlByName = "SELECT * FROM `products` WHERE `title` LIKE '%{}%'".format(body['content'])
+            cursor.execute(sqlByName)
+            dataByName = cursor.fetchall()
+            response['data'] = dataByName
+            print('进入了搜索项目名称分支',dataByName)
+        print('最后返回内容', response['data'])
+        return response
 
 
 

@@ -3,13 +3,13 @@ import type { TableData } from '@arco-design/web-vue/es/table/interface';
 
 export interface productData {
   id: number;
-  type:string;
+  type: string;
   keyCode: string;
   title: string;
   tester: string;
-  step:string;
+  step: string;
   seller: string;
-  customer:string;
+  customer: string;
 };
 
 // 远程搜索项目接口
@@ -19,6 +19,15 @@ export interface word {
 export function apiProductOrigin(data:word) {
   return axios.post('/api/product/originSearch', data);
 }
+
+// 添加抽屉上的项目远程搜索
+export interface valueWord {
+  value: string;
+};
+export function apiOriginProduct(data:valueWord) {
+  return axios.post('/api/product/optionsdemand', data);
+}
+
 
 export function apiProductAdd(data: productData) {
   return axios.post('/api/product/create', data);
@@ -39,7 +48,7 @@ export function apiProductRemove(id: number) {
 }
 
 export function apiProductList() {
-  return axios.get<TableData[]>('/api/product/list');
+  return axios.get<TableData[]|any>('/api/product/list');
 }
 
 export interface productParams {

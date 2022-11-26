@@ -377,7 +377,7 @@ const delId = ref("");
 const modalOkPros = {
   status: "warning",
 };
-const delBtnClick = (id) => {
+const delBtnClick = (id:any) => {
   delId.value = id;
   delModalVisible.value = true;
 };

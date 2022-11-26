@@ -6,6 +6,9 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
+  'menu.config': 'Basic Manager',
+  'menu.config.product': 'Project Manager',
+  'menu.config.demand': 'Demand Manager',
   'menu.dashboard': 'Dashboard',
   'menu.server.dashboard': 'Dashboard-Server',
   'menu.server.workplace': 'Workplace-Server',

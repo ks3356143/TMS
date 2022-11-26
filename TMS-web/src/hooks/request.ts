@@ -9,7 +9,7 @@ import useLoading from './loading';
 // example: useRequest(api.bind(null, {}))
 
 export default function useRequest<T>(
-  api: () => Promise<AxiosResponse<HttpResponse>>,
+  api: () => Promise<AxiosResponse<HttpResponse|any>>,
   defaultValue = [] as unknown as T,
   isLoading = true
 ) {
